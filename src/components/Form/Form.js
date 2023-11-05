@@ -1,61 +1,60 @@
 import { nanoid } from 'nanoid';
-import { Component } from 'react';
+import { useState } from 'react';
 import { FormWraper, Title, Input } from './Form.styles';
 
-export class Form extends Component {
-  state = {
-    contacts: [],
-    name: '',
-    number: '',
+export const Form = ({ onSubmit }) => {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+
+  const id = nanoid();
+
+  const handleChange = evt => {
+    if (evt.currentTarget.name === 'name') {
+      setName(evt.currentTarget.value);
+    }
+    if (evt.currentTarget.name === 'number') {
+      setNumber(evt.currentTarget.value);
+    }
   };
 
-  id = nanoid();
-
-  handleChange = evt => {
-    this.setState({ [evt.currentTarget.name]: evt.currentTarget.value });
-  };
-
-  handleSubmit = evt => {
+  const handleSubmit = evt => {
     evt.preventDefault();
-    this.props.onSubmit(this.state);
-    this.reset();
+    onSubmit({ name: name, number: number });
+    reset();
   };
-  reset = () => {
-    this.setState({
-      name: '',
-      number: '',
-    });
+  const reset = () => {
+    setName('');
+    setNumber('');
   };
-  render() {
-    return (
-      <>
-        <Title>Phonebook</Title>
-        <FormWraper>
-          <form onSubmit={this.handleSubmit}>
-            <h2>Name</h2>
+
+  return (
+    <>
+      <Title>Phonebook</Title>
+      <FormWraper>
+        <form onSubmit={handleSubmit}>
+          <h2>Name</h2>
+          <input
+            id={id}
+            type="text"
+            name="name"
+            onChange={handleChange}
+            value={name}
+            required
+          />
+          <h2>Number</h2>
+          <Input>
             <input
-              id={this.id}
-              type="text"
-              name="name"
-              onChange={this.handleChange}
-              value={this.state.name}
+              id={id}
+              type="tel"
+              name="number"
+              onChange={handleChange}
+              value={number}
               required
             />
-            <h2>Number</h2>
-            <Input>
-              <input
-                id={this.id}
-                type="tel"
-                name="number"
-                onChange={this.handleChange}
-                value={this.state.number}
-                required
-              />
-              <button type="submit">Add contact</button>
-            </Input>
-          </form>
-        </FormWraper>
-      </>
-    );
-  }
-}
+            <button type="submit">Add contact</button>
+          </Input>
+        </form>
+      </FormWraper>
+    </>
+  );
+};

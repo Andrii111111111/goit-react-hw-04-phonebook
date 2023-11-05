@@ -1,10 +1,11 @@
 import { ContactsWraper, DelButt } from './ContactList.styles';
 
 export const ContactList = ({ contacts, deleteCon }) => {
+  const renderContact = contacts();
   return (
     <ContactsWraper>
       <ul>
-        {contacts.map(contact => (
+        {renderContact.map(contact => (
           <li key={contact.id}>
             {contact.name}:{contact.number}
             <DelButt type="button" onClick={() => deleteCon(contact.id)}>

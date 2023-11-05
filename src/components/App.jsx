@@ -1,89 +1,74 @@
+/* eslint-disable array-callback-return */
 
 import { nanoid } from 'nanoid';
 import { Form } from "./Form/Form";
-import { Component } from "react";
+import { useState, useEffect } from "react";
 import { ContactList } from './ContactList/ContactList';
 import { Filter } from './Filter/Filter';
 
 
-export class App extends Component {
-
-  state = {
-    contacts: [],
-    filter: ''
-  }
+export const App = () => {
+  const [contacts, setContacts] = useState([])
+  const [filter, setFilter] = useState('')
+ 
   
-  deleteContacs = (id) => {
-    this.setState(prevState => ({
-      contacts:prevState.contacts.filter(contact=>contact.id !== id)
-    }))
+  const deleteContacs = (id) => {
+    setContacts((prevContacts) => prevContacts.filter(contact => contact.id !== id))
   }
 
-  chengeFilter = newFilter => {
-    this.setState({ filter: newFilter })
+  const chengeFilter = (newFilter) => {
+    setFilter(newFilter)
   }
 
-  formSubmitEnd = data => {
-    if (this.state.contacts.find(({name}) => 
-      name.toLowerCase() === data.name.toLowerCase()))
-    {
+  const formSubmitEnd = (data) => {
+    if (contacts.find(({ name }) =>
+      name.toLowerCase() === data.name.toLowerCase())) {
       alert(`${data.name} is already in contacts.`);
       return;
     }
-       this.setState(prevState => ({ contacts: [...prevState.contacts, { ...data, id: nanoid() }] })) 
+    setContacts((prevContacts) => [...prevContacts, { ...data, id: nanoid() }])
   }
   
-componentDidMount() {
+  useEffect(() => {
     const savedContacts = localStorage.getItem('contacts');
     if (savedContacts !== null) {
-      this.setState({
-        contacts: JSON.parse(savedContacts),
-      });
+      setContacts(JSON.parse(savedContacts))
     }
-  }
+  }, [])
 
 
-  componentDidUpdate(prevProps, prevState) {
-    console.log('prevState', prevState);
-    console.log('this.state', this.state);
+  useEffect((setContacts) => {
 
-    if (prevState.contacts !== this.state.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    if (setContacts !== contacts) {
+      localStorage.setItem('contacts', JSON.stringify(contacts));
     }
-  }
+  }, [contacts, setContacts])
 
 
-//  eslint-disable-next-line array-callback-return
 
-    // eslint-disable-next-line array-callback-return
-  // contactFilter = e => {
-  //   if (this.state.contacts.filter(contact  =>
-  //     contact.name.toLowerCase().includes(this.state.filter.toLowerCase()) ))
-  //      {
-  //         return  this.contact
-  //       }
-  //   }
-  
-  render() {
-     const { filter } = this.state
-  
- // eslint-disable-next-line array-callback-return
- const contactFilter =  this.state.contacts.filter(contact => {
-         if (contact.name.toLowerCase().includes(this.state.filter.toLowerCase())) {
-           return contact
-         }
-     })
+ 
+  const contactFilter = () => {const filtred = contacts.filter(contact=> {
+ 
+    if (contact.name.toLowerCase().includes(filter.toLowerCase())) {
+      return contact
+    }
+
+  })
+    return filtred
+}
+
+
   return (
    
     <>
-      <Form onSubmit={this.formSubmitEnd} />
-      <Filter filter={filter} onChengeFilter={this.chengeFilter}/>
+      <Form onSubmit={formSubmitEnd} />
+      <Filter filter={setFilter} onChengeFilter={chengeFilter}/>
       <ContactList contacts={contactFilter}
-        deleteCon = {this.deleteContacs}
+        deleteCon = {deleteContacs}
       />
     </>)
 
-}
+
 }
 
 
